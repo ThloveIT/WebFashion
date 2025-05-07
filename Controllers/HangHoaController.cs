@@ -52,18 +52,31 @@ namespace WebFashion.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, HangHoaVM hangHoaVM)
+        public IActionResult Update(string id, HangHoa hangHoa)
         {
             try
             {
-                var hangHoa = hangHoas.SingleOrDefault(hh => hh.MaHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
+                // ckeck dinh dang Id trong URL
+                if(!Guid.TryParse(id, out Guid guidId))
                 {
-                    return NotFound();
+                    return BadRequest("ID khong hop le");
                 }
-                hangHoa.TenHangHoa = hangHoaVM.TenHangHoa;
-                hangHoa.DonGia = hangHoaVM.DonGia;
-                return Ok(hangHoa);
+                //kiem tra id trong body
+                if(hangHoa.MaHangHoa == null && hangHoa.MaHangHoa != guidId)
+                {
+                    return BadRequest("ID khong trung khop");
+                }
+                // tim hang hoa
+                var hh = hangHoas.SingleOrDefault(hh => hh.MaHangHoa == guidId);
+                if(hh == null)
+                {
+                    return NotFound("Khong tim thay hang hoa");
+                }
+                //cap nhat du lieu
+                hh.TenHangHoa = hangHoa.TenHangHoa;
+                hh.DonGia = hangHoa.DonGia;
+
+                return Ok("Put thanh cong");
             }
             catch
             {
@@ -76,14 +89,19 @@ namespace WebFashion.Controllers
         {
             try
             {
-                var hangHoa = hangHoas.SingleOrDefault(hh => hh.MaHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
+                // kiem tra id
+                if(!Guid.TryParse(id, out Guid guidId))
+                {
+                    return BadRequest("Id khong hop le");
+                }
+                //tim hang hoa trong list
+                var hangHoa = hangHoas.SingleOrDefault(hh => hh.MaHangHoa == guidId);
+                if(hangHoa == null)
                 {
                     return NotFound();
                 }
-                //Delete
                 hangHoas.Remove(hangHoa);
-                return Ok();
+                return Ok("Da xoa hang hoa thanh cong");
             }
             catch
             {
