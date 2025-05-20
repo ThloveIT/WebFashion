@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebFashion.Data;
+using WebFashion.Sevice;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.AddDbContext<MyDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB"));
 });
+
+builder.Services.AddScoped<ILoaiRepository, LoaiRepository>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
